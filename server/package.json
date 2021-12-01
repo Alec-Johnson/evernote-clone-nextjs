@@ -1,0 +1,33 @@
+{
+   "name": "server",
+   "version": "0.0.1",
+   "description": "Awesome project developed with TypeORM.",
+   "devDependencies": {
+      "@types/bcryptjs": "^2.4.2",
+      "@types/jsonwebtoken": "^8.5.6",
+      "@types/morgan": "^1.9.3",
+      "@types/node": "^16.11.10",
+      "ts-node": "10.4.0",
+      "typescript": "4.5.2"
+   },
+   "dependencies": {
+      "apollo-server-express": "^2",
+      "bcryptjs": "^2.4.3",
+      "cors": "^2.8.5",
+      "dotenv": "^10.0.0",
+      "express": "^4.17.1",
+      "graphql": "^15.5.1",
+      "jsonwebtoken": "^8.5.1",
+      "morgan": "^1.10.0",
+      "mysql": "^2.14.1",
+      "nodemon": "^2.0.15",
+      "reflect-metadata": "^0.1.10",
+      "type-graphql": "^1.1.1",
+      "typeorm": "0.2.41"
+   },
+   "scripts": {
+      "start": "nodemon -L --exec ts-node src/index.ts",
+      "start:db": "docker-compose up",
+      "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js"
+   }
+}
