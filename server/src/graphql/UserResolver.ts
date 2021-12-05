@@ -46,9 +46,8 @@ export class UserResolver {
 				username: email.split("@")[0], // EX: email: akj3211@gmail.com => username: akj3211
 			});
 			return true;
-		} catch (error) {
-			console.log(error);
-			throw new Error("User Resolver Signup Error");
+		} catch (error: any) {
+			throw new Error(error);
 		}
 	}
 
@@ -72,9 +71,8 @@ export class UserResolver {
 			res.cookie(CONST.JWT_COOKIE, refreshToken, { httpOnly: true });
 
 			return { access_token: accessToken };
-		} catch (error) {
-			console.log(error);
-			throw new Error("User Resolver Login Response Error");
+		} catch (error: any) {
+			throw new Error(error);
 		}
 	}
 }

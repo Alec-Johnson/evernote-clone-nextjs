@@ -12,7 +12,12 @@ createConnection()
 	.then(async (connection) => {
 		const app = express();
 		// Express middlewares
-		app.use(cors());
+		app.use(
+			cors({
+				origin: "http://localhost:3000",
+				credentials: true,
+			})
+		);
 		app.use(morgan("dev"));
 
 		app.get("/", (req, res) => {
@@ -26,7 +31,7 @@ createConnection()
 			context: ({ req, res }): MyContext => ({ req, res }),
 		});
 
-		apolloServer.applyMiddleware({ app });
+		apolloServer.applyMiddleware({ app, cors: false }); // cors: false to disable cors for graphql
 
 		app.listen(CONST.PORT, () =>
 			console.log(
