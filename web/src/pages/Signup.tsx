@@ -1,33 +1,31 @@
 import styled from "@emotion/styled";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { GENERICS } from "../components/GlobalStyles";
 import { Wrapper } from "../components/Wrapper";
-import { useLoginMutation } from "../generated/graphql";
-import {  saveToken } from "../helper/auth";
+import { useSignupMutation } from "../generated/graphql";
 
-export default function Login() {
-  const [submitLogin, { error, loading }] = useLoginMutation()
-
+export default function Signup() {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
+  const [submitSignup, { error, loading }] = useSignupMutation();
 
   const onSubmitHandler = async (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     try { 
-      const data = await submitLogin({
+      await submitSignup({
         variables: {
           ...form,
         },
       });
-      saveToken(data.data?.login.access_token!); // Save token to local storage
       navigate("/", { replace: true });
+      alert("Signup successful!");
     } catch(err){
       console.log(err)
     }
@@ -64,13 +62,14 @@ export default function Login() {
             )}
 
             <div>
-              <button disabled={loading} type='submit'>{loading ? "..." : "Submit"}</button>
+              <button disabled={loading} type='submit'>{loading ? "..." : "Sign up for free"}</button>
             </div>
             <p>
-              Don't have an account? Signup&nbsp;
-              <span><Link to='/signup'>here</Link></span>
+              Already have an account? Login&nbsp;
+              <span><Link to='/login'>here</Link></span>
             </p>
           </form>
+          
         </div>
       </FormWrapper>
     </Wrapper>
@@ -111,7 +110,7 @@ const FormWrapper = styled("div")`
         margin-bottom: 10px;
         input {
           border: 2px solid gray;
-          border-color: #ccc;
+          borfer-color: #ccc;
           border-radius: 10px;
           padding: 10px 20px;
           outline: none;
