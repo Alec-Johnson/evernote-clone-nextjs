@@ -29,11 +29,11 @@ export class Note extends BaseEntity {
 	@ManyToOne(() => User, (user) => user.id)
 	created_by: User;
 
-	@Field(() => String)
+	@Field(() => Date)
 	@CreateDateColumn()
 	created_at: Date;
 
-	@Field(() => String)
+	@Field(() => Date)
 	@UpdateDateColumn()
 	updated_at: Date;
 }

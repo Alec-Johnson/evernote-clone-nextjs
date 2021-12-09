@@ -32,7 +32,7 @@ export const GENERICS = {
   border: "1px solid #f1f1f1",
   colorBlack: "#222",
   colorBlackCalm: "#444",
-  blackGray: "#737373",
+  colorGray: "#737373",
   boxShadow: "#ccc 0px 4px 5px -2px",
 }
 

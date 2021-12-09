@@ -19,7 +19,7 @@ export function Navigation() {
       console.log(err)
     }
   }
-  
+
   return (
     <NavigationStyled>
       <div className='user-profile'>
@@ -63,7 +63,7 @@ const NavigationStyled = styled.div`
     padding: 20px;
     gap: 10px;
 
-    > div:first-child {
+    > div:first-of-type {
       background-color: ${GENERICS.primaryColor};
       color: white;
       width: 30px;
@@ -73,7 +73,7 @@ const NavigationStyled = styled.div`
       ${MIXINS.va()}
     }
 
-    >span:nth-child(2) {
+    >span:nth-of-type(2) {
       white-space: nowrap;
     }
     > span:last-child {
