@@ -16,11 +16,9 @@ import {
 	sendRefreshToken,
 } from "../helpers/generateToken";
 import { Request, Response } from "express";
-import { CONST } from "../constants/strings";
 import { getConnection } from "typeorm";
-import { verify } from "jsonwebtoken";
 import { isAuth } from "../helpers/isAuth";
-import { log } from "console";
+import { CONST } from "../constants/strings";
 
 export interface MyContext {
 	res: Response;
@@ -105,6 +103,12 @@ export class UserResolver {
 		await getConnection()
 			.getRepository(User)
 			.increment({ id: userId! }, "token_version", 1);
+		return true;
+	}
+
+	@Mutation(() => Boolean)
+	async logout(@Ctx() ctx: MyContext) {
+		ctx.res.clearCookie(CONST.JWT_COOKIE);
 		return true;
 	}
 }
