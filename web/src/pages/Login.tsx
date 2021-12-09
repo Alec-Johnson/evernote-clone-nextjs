@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate, Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { GENERICS } from "../components/GlobalStyles";
 import { Wrapper } from "../components/Wrapper";
 import { useLoginMutation } from "../generated/graphql";
-import {  saveToken } from "../helper/auth";
+import { isAuthenticated, saveToken } from "../helper/auth";
 
 export default function Login() {
   const [submitLogin, { error, loading }] = useLoginMutation()
@@ -17,7 +17,6 @@ export default function Login() {
 
   const navigate = useNavigate();
 
-
   const onSubmitHandler = async (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     try { 
@@ -26,7 +25,7 @@ export default function Login() {
           ...form,
         },
       });
-      saveToken(data.data?.login.access_token!); // Save token to local storage
+      saveToken(data.data?.login.access_token!); // Save token to local storage 
       navigate("/", { replace: true });
     } catch(err){
       console.log(err)
@@ -38,6 +37,9 @@ export default function Login() {
       ({ target }: ChangeEvent<HTMLInputElement>) => 
         setForm({...form, [name]: target.value})
       
+  if(isAuthenticated()) {
+    return <Navigate to='/' />
+  }
 
   return (
     <Wrapper center={true}>
@@ -97,7 +99,7 @@ const FormWrapper = styled("div")`
   }
 
   .right-side {
-    > div:first-child {
+    > div:first-of-type {
       text-align: center;
       img {
         width: 50px;

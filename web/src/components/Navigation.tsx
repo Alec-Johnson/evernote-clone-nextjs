@@ -73,7 +73,7 @@ const NavigationStyled = styled.div`
       ${MIXINS.va()}
     }
 
-    >span:nth-of-type(2) {
+    >span:nth-of-type(1) { // No wrap on span that hold clients name
       white-space: nowrap;
     }
     > span:last-child {

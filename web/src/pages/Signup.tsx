@@ -96,7 +96,7 @@ const FormWrapper = styled("div")`
   }
 
   .right-side {
-    > div:first-child {
+    > div:first-of-type {
       text-align: center;
       img {
         width: 50px;
@@ -110,7 +110,7 @@ const FormWrapper = styled("div")`
         margin-bottom: 10px;
         input {
           border: 2px solid gray;
-          borfer-color: #ccc;
+          border-color: #ccc;
           border-radius: 10px;
           padding: 10px 20px;
           outline: none;
