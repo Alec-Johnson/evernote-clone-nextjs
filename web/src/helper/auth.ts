@@ -3,7 +3,7 @@ import jwtDecode, { JwtPayload } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { useApolloClient } from "@apollo/client";
 
-const EXPRESS_URL = "http://localhost:4000";
+const EXPRESS_URL = process.env.REACT_APP_EXPRESS_URL;
 const TOKEN = process.env.REACT_APP_TOKEN!;
 export const saveToken = (token: string) => storage.setItem(TOKEN, token);
 export const getToken = (): string | null => storage.getItem(TOKEN);

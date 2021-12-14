@@ -1,45 +1,36 @@
 import styled from "@emotion/styled";
-import { ChangeEvent, FormEvent, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { GENERICS } from "../components/GlobalStyles";
 import { Wrapper } from "../components/Wrapper";
 import { useLoginMutation } from "../generated/graphql";
 import { isAuthenticated, saveToken } from "../helper/auth";
-import { useRequired } from "../helper/hooks";
+import { useForm } from 'react-hook-form'
+
+type FormData = {
+  email: string,
+  password: string,
+}
 
 export default function Login() {
   const [submitLogin, { error, loading }] = useLoginMutation()
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
-  const { isValid } = useRequired(form)
+  const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm<FormData>()
   
   const navigate = useNavigate();
 
-  const onSubmitHandler = async (evt: FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
-    try { 
-      const data = await submitLogin({
-        variables: {
-          ...form,
-        },
+  const onSubmitHandler = async (data: FormData) => {
+    try {
+      const res = await submitLogin({
+        variables: data,
       });
-      saveToken(data.data?.login.access_token!); // Save token to local storage 
+      saveToken(res.data?.login.access_token!); // Save token to local storage 
       navigate("/", { replace: true });
     } catch(err){
       console.log(err)
     }
   }
 
-  const onChangeHandler = 
-    (name: string) => 
-      ({ target }: ChangeEvent<HTMLInputElement>) => 
-        setForm({...form, [name]: target.value})
-      
   if(isAuthenticated()) {
     return <Navigate to='/' />
   }
@@ -55,13 +46,25 @@ export default function Login() {
             <img src='https://www.freeiconspng.com/uploads/evernote-icon-2.png' alt='Evernote Logo' />
             <h2>Evernote Clone</h2>
           </div>
-          <form onSubmit={onSubmitHandler}>
+          <form onSubmit={handleSubmit(onSubmitHandler)}>
             <div>
-              <input placeholder='Email' value={form.email}  onChange={onChangeHandler("email")}  />
+              <input placeholder='Email' type="email" {...register("email", {
+                  required: "Email is required",
+                })}
+              />
+              {errors.email && <p className="text-error">{errors.email.message}</p>}
             </div>
 
             <div>
-              <input type='password' placeholder='Password' value={form.password} onChange={onChangeHandler("password")} />
+              <input placeholder='Password' type="password" {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  }
+                })}
+              />
+              {errors.password && <p className="text-error">{errors.password.message}</p>}
             </div>
 
             {error && error.graphQLErrors.map(({message}, i) => 
@@ -69,7 +72,7 @@ export default function Login() {
             )}
 
             <div>
-              <button disabled={!isValid || loading} type='submit'>{loading ? "..." : "Submit"}</button>
+              <button disabled={isSubmitting || loading} type='submit'>{loading ? "..." : "Submit"}</button>
             </div>
             <p>
               Don't have an account? Signup&nbsp;
@@ -112,6 +115,10 @@ const FormWrapper = styled("div")`
     }
 
     form {
+      .text-error {
+        padding: 5px 0;
+        color: red;
+      }
       div {
         margin-bottom: 10px;
         input {

@@ -3,7 +3,7 @@ import { ListNotesDocument, Note, useDeleteNoteMutation, useListNotesQuery, useU
 import { GENERICS, MIXINS } from './GlobalStyles'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { FaSort, FaSortDown, FaSortUp, FaTrash } from 'react-icons/fa'
+import { FaSortDown, FaSortUp, FaTrash } from 'react-icons/fa'
 import {useEffect, useState } from 'react'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'

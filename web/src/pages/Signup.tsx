@@ -1,31 +1,27 @@
 import styled from "@emotion/styled";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { GENERICS } from "../components/GlobalStyles";
 import { Wrapper } from "../components/Wrapper";
 import { useSignupMutation } from "../generated/graphql";
-import { useRequired } from "../helper/hooks";
+
+type FormData = {
+  email: string,
+  password: string,
+}
 
 export default function Signup() {
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
-  const { isValid } = useRequired(form)
+  const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm<FormData>()
 
   const navigate = useNavigate()
 
   const [submitSignup, { error, loading }] = useSignupMutation();
 
-  const onSubmitHandler = async (evt: FormEvent<HTMLFormElement>) => {
-    evt.preventDefault();
+  const onSubmitHandler = async (data: FormData) => {
     try { 
       await submitSignup({
-        variables: {
-          ...form,
-        },
+        variables: data,
       });
       navigate("/", { replace: true });
       alert("Signup successful!");
@@ -33,12 +29,6 @@ export default function Signup() {
       console.log(err)
     }
   }
-
-  const onChangeHandler = 
-    (name: string) => 
-      ({ target }: ChangeEvent<HTMLInputElement>) => 
-        setForm({...form, [name]: target.value})
-      
 
   return (
     <Wrapper center={true}>
@@ -51,13 +41,29 @@ export default function Signup() {
             <img src='https://www.freeiconspng.com/uploads/evernote-icon-2.png' alt='Evernote Logo' />
             <h2>Evernote Clone</h2>
           </div>
-          <form onSubmit={onSubmitHandler}>
+          <form onSubmit={handleSubmit(onSubmitHandler)}>
             <div>
-              <input placeholder='Email' value={form.email}  onChange={onChangeHandler("email")}  />
+              <input placeholder='Email' {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  }
+                })}
+              />
+              {errors.email && <p className="text-error">{errors.email.message}</p>}
             </div>
 
             <div>
-              <input type='password' placeholder='Password' value={form.password} onChange={onChangeHandler("password")} />
+              <input type='password' placeholder='Password' {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  }
+                })} 
+              />
+              {errors.password && <p className="text-error">{errors.password.message}</p>}
             </div>
 
             {error && error.graphQLErrors.map(({message}, i) => 
@@ -65,7 +71,7 @@ export default function Signup() {
             )}
 
             <div>
-              <button disabled={!isValid ||loading} type='submit'>{loading ? "..." : "Sign up for free"}</button>
+              <button disabled={isSubmitting ||loading} type='submit'>{loading ? "..." : "Sign up for free"}</button>
             </div>
             <p>
               Already have an account? Login&nbsp;
@@ -109,6 +115,10 @@ const FormWrapper = styled("div")`
     }
 
     form {
+      .text-error {
+        padding: 5px 0;
+        color: red;
+      }
       div {
         margin-bottom: 10px;
         input {
