@@ -2,13 +2,12 @@ import { User } from "../entity/User";
 import {
 	Arg,
 	Ctx,
-	Field,
 	Mutation,
-	ObjectType,
 	Query,
 	Resolver,
 	UseMiddleware,
 } from "type-graphql";
+import { ILike } from "typeorm";
 import { Note } from "../entity/Note";
 import { isAuth } from "../helpers/isAuth";
 import { MyContext } from "./UserResolver";
@@ -17,8 +16,25 @@ import { MyContext } from "./UserResolver";
 export class NoteResolver {
 	@Query(() => [Note])
 	@UseMiddleware(isAuth)
-	async listNotes(@Ctx() ctx: MyContext) {
-		return Note.find({ relations: ["created_by"] });
+	async listNotes(
+		@Ctx() ctx: MyContext,
+		@Arg("search", { defaultValue: "" }) search: string,
+		@Arg("orderBy", { defaultValue: "DESC" }) orderBy: string
+	) {
+		// Find all notes that have a title that contains the search string, case insensitive
+		// Make sure all notes that are to be returned are owned by the user that is logged in
+		return Note.find({
+			relations: ["created_by"],
+			where: {
+				title: ILike(`%${search}%`),
+				created_by: {
+					id: ctx.tokenPayload?.userId,
+				},
+			},
+			order: {
+				created_at: orderBy === "DESC" ? "DESC" : "ASC",
+			},
+		});
 	}
 
 	@Mutation(() => Note)
