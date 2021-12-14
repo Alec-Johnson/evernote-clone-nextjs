@@ -23,7 +23,7 @@ createConnection()
 		// Express middlewares
 		app.use(
 			cors({
-				origin: CONST.REACT_WEB,
+				origin: "http://localhost:3000",
 				credentials: true,
 			})
 		);
