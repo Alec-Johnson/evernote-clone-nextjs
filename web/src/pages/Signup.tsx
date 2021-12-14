@@ -5,12 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { GENERICS } from "../components/GlobalStyles";
 import { Wrapper } from "../components/Wrapper";
 import { useSignupMutation } from "../generated/graphql";
+import { useRequired } from "../helper/hooks";
 
 export default function Signup() {
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+
+  const { isValid } = useRequired(form)
 
   const navigate = useNavigate()
 
@@ -62,7 +65,7 @@ export default function Signup() {
             )}
 
             <div>
-              <button disabled={loading} type='submit'>{loading ? "..." : "Sign up for free"}</button>
+              <button disabled={!isValid ||loading} type='submit'>{loading ? "..." : "Sign up for free"}</button>
             </div>
             <p>
               Already have an account? Login&nbsp;
@@ -127,6 +130,10 @@ const FormWrapper = styled("div")`
           background-color: ${GENERICS.primaryColor};
           border-radius: 10px;
           padding: 8px 20px;
+
+          &:disabled {
+            background-color: #ccc;
+          }
         }
         small.error-message {
           color: red;

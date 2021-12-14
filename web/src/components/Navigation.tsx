@@ -1,13 +1,20 @@
 import styled from '@emotion/styled'
+import { useEffect, useState } from 'react'
 import { FaBook, FaPlus, FaSearch, FaSignOutAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router'
-import { useLogoutMutation } from '../generated/graphql'
+import { ListNotesDocument, useAddNoteMutation, useListNotesQuery, useLogoutMutation, useMeQuery } from '../generated/graphql'
 import { clearToken } from '../helper/auth'
+import { debounceFn } from '../helper/debounce'
 import { GENERICS, MIXINS } from './GlobalStyles'
 
 export function Navigation() {
   const navigate = useNavigate()
+  const { refetch } = useListNotesQuery()
   const [submitLogout, {client}] = useLogoutMutation()
+  const { data } = useMeQuery()
+  const [ submitAddNote ] = useAddNoteMutation()
+
+  const [searchText, setSearchText] = useState("")
 
   const onLogoutHandler = async () => {
     try {
@@ -20,22 +27,53 @@ export function Navigation() {
     }
   }
 
+  const onAddNoteHandler = async () => {
+    try {
+      const note = await submitAddNote({ variables: {content: "Content", title: "Title"} })
+      const listNotes = client.readQuery({ query: ListNotesDocument })
+      client.writeQuery({
+        query: ListNotesDocument,
+        data: {
+          listNotes: [...listNotes.listNotes, note.data?.addNote]
+        }
+      }) 
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  // We write the query so our ListNotes component can render the notes we get from the server
+  const onSearchHandler = debounceFn( async () => {
+    await refetch({ search: searchText}).then(({data: { listNotes }}) => {
+      client.writeQuery({
+        query: ListNotesDocument,
+        data: {
+          listNotes,
+        }
+      })
+    })
+  }, 1000)
+
+  useEffect(() => {
+    onSearchHandler()
+  }, [searchText])
+
   return (
     <NavigationStyled>
       <div className='user-profile'>
-        <div>ff</div>
+        <div>{data?.me?.username.substring(0,1)}</div>
         {/* <img /> */}
-        <span>Name Doe</span>
+        <span>{data?.me?.username}</span>
         <span onClick={onLogoutHandler}>
         <FaSignOutAlt />
         </span>
       </div>
       <div className='search-container'>
         <FaSearch />
-        <input type='text' placeholder='Search' />
+        <input type='text' placeholder='Search' value={searchText} onChange={(e) => setSearchText(e.target.value)} />
       </div>
 
-      <div className="newnote-button">
+      <div className="newnote-button" onClick={onAddNoteHandler}>
         <FaPlus />
         <span>New Note</span>
       </div>

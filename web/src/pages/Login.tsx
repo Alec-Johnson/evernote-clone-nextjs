@@ -6,6 +6,7 @@ import { GENERICS } from "../components/GlobalStyles";
 import { Wrapper } from "../components/Wrapper";
 import { useLoginMutation } from "../generated/graphql";
 import { isAuthenticated, saveToken } from "../helper/auth";
+import { useRequired } from "../helper/hooks";
 
 export default function Login() {
   const [submitLogin, { error, loading }] = useLoginMutation()
@@ -15,6 +16,8 @@ export default function Login() {
     password: "",
   });
 
+  const { isValid } = useRequired(form)
+  
   const navigate = useNavigate();
 
   const onSubmitHandler = async (evt: FormEvent<HTMLFormElement>) => {
@@ -66,7 +69,7 @@ export default function Login() {
             )}
 
             <div>
-              <button disabled={loading} type='submit'>{loading ? "..." : "Submit"}</button>
+              <button disabled={!isValid || loading} type='submit'>{loading ? "..." : "Submit"}</button>
             </div>
             <p>
               Don't have an account? Signup&nbsp;
@@ -130,6 +133,10 @@ const FormWrapper = styled("div")`
           background-color: ${GENERICS.primaryColor};
           border-radius: 10px;
           padding: 8px 20px;
+
+          &:disabled {
+            background-color: #ccc;
+          }
         }
         small.error-message {
           color: red;

@@ -27,7 +27,8 @@ export const isAuthenticated = () => {
 export const usePrepareApp = () => {
 	const [isLoading, setIsLoading] = useState(true);
 	const { resetStore } = useApolloClient();
-
+	// fetch new token automatically when app is loaded
+	// and user is logged in
 	useEffect(() => {
 		fetch(`${EXPRESS_URL}/refresh-token`, {
 			method: "POST",
@@ -37,7 +38,6 @@ export const usePrepareApp = () => {
 			.then((data) => {
 				if (data?.success && data?.access_token) {
 					console.log(data);
-
 					saveToken(data?.access_token);
 					setIsLoading(false);
 				} else {

@@ -16,7 +16,8 @@ import reportWebVitals from "./reportWebVitals";
 export const EXPRESS_URL = process.env.REACT_APP_EXPRESS_URL;
 export const GRAPHQL_URL = `${EXPRESS_URL}/graphql`;
 
-const refreshLink = new TokenRefreshLink({
+// Get new token from server when original token expires
+const refreshLink = new TokenRefreshLink({ 
   accessTokenField: "access_token",
   isTokenValidOrUndefined: () => isAuthenticated(),
   fetchAccessToken: () => {
@@ -39,7 +40,6 @@ const httpLink = createHttpLink({
 
 const authLink = setContext((_, { headers }) => {
   const token = getToken();
-
   return {
     headers: {
       ...headers,
